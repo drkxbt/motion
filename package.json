@@ -1,0 +1,64 @@
+{
+  "name": "@drkxbt/motion",
+  "version": "0.1.0",
+  "description": "Small animated details for websites in plain CSS and TypeScript: buttons, icons, components and loading states, with no dependencies.",
+  "license": "MIT",
+  "author": "drk",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./buttons": {
+      "types": "./dist/buttons/buttons.d.ts",
+      "default": "./dist/buttons/buttons.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/icons.d.ts",
+      "default": "./dist/icons/icons.js"
+    },
+    "./components": {
+      "types": "./dist/components/components.d.ts",
+      "default": "./dist/components/components.js"
+    },
+    "./loading": {
+      "types": "./dist/loading/loading.d.ts",
+      "default": "./dist/loading/loading.js"
+    },
+    "./motion.css": "./motion.css"
+  },
+  "files": [
+    "dist",
+    "motion.css"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test \"test/*.test.js\"",
+    "demo": "tsc -p tsconfig.json && node demo/serve.js"
+  },
+  "devDependencies": {
+    "typescript": ">=5.4"
+  },
+  "keywords": [
+    "animation",
+    "micro-interactions",
+    "ui",
+    "buttons",
+    "icons",
+    "toast",
+    "tooltip",
+    "css"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drkxbt/motion.git"
+  },
+  "homepage": "https://github.com/drkxbt/motion#readme"
+}

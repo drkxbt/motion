@@ -1,0 +1,154 @@
+@font-face {
+  font-family: "Geist";
+  src: url("fonts/geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("fonts/geist-mono.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --bg: #f5f4f0;
+  --card: rgb(255 255 255 / 0.78);
+  --text: #121212;
+  --text-2: #45464a;
+  --text-3: #6b6c70;
+  --edge: rgb(18 18 18 / 0.08);
+  --mint: #2ff0b8;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #0c0c0d;
+  --card: rgb(255 255 255 / 0.035);
+  --text: #f2f2ef;
+  --text-2: #b9b9b5;
+  --text-3: #8a8a86;
+  --edge: rgb(255 255 255 / 0.08);
+  --motion-ink: #f2f2ef;
+  --motion-surface: #1a1a1c;
+  --motion-muted: #8a8a86;
+  --motion-line: rgb(255 255 255 / 0.12);
+  --motion-accent: #f2f2ef;
+  --motion-on-accent: #121212;
+  --motion-focus: #f2f2ef;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); transition: background-color 300ms ease; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.6 "Geist", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+::selection { background: var(--mint); color: #04392a; }
+code, .path { font-family: "Geist Mono", ui-monospace, monospace; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+.page { width: min(1120px, 100% - 40px); margin: 0 auto; padding: 56px 0 40px; }
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.path { margin: 0; color: var(--text-3); font-size: 13px; }
+h1 { margin: 6px 0 0; font-size: 56px; font-weight: 650; line-height: 1; letter-spacing: -0.05em; }
+.lede { max-width: 60ch; margin: 16px 0 0; color: var(--text-2); font-size: 17px; line-height: 1.6; text-wrap: pretty; }
+.theme { flex: none; }
+
+.group { margin-top: 72px; }
+h2 { margin: 0 0 18px; font-size: 22px; font-weight: 650; letter-spacing: -0.03em; }
+.group-sub { max-width: 64ch; margin: -8px 0 20px; color: var(--text-2); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px 10px 20px;
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: 0 0 0 1px var(--edge), 0 1px 2px rgb(0 0 0 / 0.03), 0 16px 32px -24px rgb(0 0 0 / 0.3);
+}
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 168px;
+  padding: 24px 16px;
+  border-radius: 10px;
+  background: radial-gradient(circle at center, rgb(127 127 127 / 0.12) 1px, transparent 1.3px) 0 0 / 16px 16px;
+}
+.stage-col { flex-direction: column; flex-wrap: nowrap; }
+.card h3 { margin: 16px 10px 0; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+.card p { margin: 4px 10px 0; color: var(--text-2); font-size: 14px; line-height: 1.55; text-wrap: pretty; }
+.card p code { font-size: 12.5px; }
+.row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
+.snippet { display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 4px 4px 14px; border-radius: 12px; background: var(--motion-surface); box-shadow: inset 0 0 0 1px var(--motion-line); font-size: 13.5px; }
+.snippet code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.snippet .m-btn { height: 34px; width: 34px; box-shadow: none; }
+
+.hold { min-width: 168px; }
+
+.grid-4 { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.icons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.icon-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 8px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: 0 0 0 1px var(--edge);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 160ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.icon-toggle:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 22%, transparent), 0 10px 22px -16px rgb(0 0 0 / 0.4); }
+.icon-toggle:active { transform: scale(0.97); }
+.icon-toggle .m-icon { width: 26px; height: 26px; }
+.icon-toggle > span:last-child { color: var(--text-2); }
+
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: min(260px, 100%); font-size: 14px; cursor: pointer; }
+
+.faq { width: 100%; max-width: 360px; font-size: 14px; }
+.faq .m-accordion-item:first-child { border-top: 1px solid var(--motion-line); }
+.faq p { margin: 0; color: var(--text-2); }
+.faq .m-icon { width: 16px; height: 16px; color: var(--text-3); }
+
+.big-number { font-size: 52px; font-weight: 650; letter-spacing: -0.04em; }
+.progress { width: min(280px, 100%); }
+.profile { display: flex; align-items: center; gap: 12px; width: min(260px, 100%); min-height: 48px; }
+.avatar-sk { flex: none; width: 44px; height: 44px; border-radius: 999px; }
+.lines { display: grid; flex: 1; gap: 8px; }
+.profile-name { font-weight: 600; }
+.profile-sub { color: var(--text-3); font-size: 13px; }
+.avatar { flex: none; width: 44px; height: 44px; border-radius: 999px; background: linear-gradient(135deg, #2ff0b8, #f0bf2f); }
+.spinner-big { width: 32px; height: 32px; }
+.like { gap: 8px; padding: 0 16px 0 13px; }
+.like .m-icon { width: 20px; height: 20px; }
+.like .m-counter { min-width: 3ch; font-variant-numeric: tabular-nums; }
+.like[aria-pressed="true"] { color: var(--motion-heart); }
+.waiting { pointer-events: none; }
+
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--edge); color: var(--text-3); font-size: 13px; }
+.foot p { margin: 0; }
+
+@media (max-width: 640px) {
+  .page { width: min(1120px, 100% - 32px); padding-top: 32px; }
+  h1 { font-size: 44px; }
+  .lede { font-size: 16px; }
+  .grid { grid-template-columns: 1fr; }
+  .icons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

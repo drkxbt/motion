@@ -1,0 +1,549 @@
+/* motion: small animated details for buttons, icons, components and loading states.
+   Every colour, duration and curve is a custom property, so one block themes everything. Under reduced motion,
+   movement stops and state changes happen at once; spinners keep turning, since they are the only sign of work. */
+
+:root {
+  --motion-ink: #121212;
+  --motion-surface: #ffffff;
+  --motion-muted: #6b6c70;
+  --motion-line: rgb(18 18 18 / 0.12);
+  --motion-accent: #121212;
+  --motion-on-accent: #ffffff;
+  --motion-success: #12a150;
+  --motion-danger: #e5484d;
+  --motion-heart: #f43f5e;
+  --motion-focus: #121212;
+  --motion-radius: 10px;
+  --motion-stroke: 2;
+  --motion-fast: 160ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  /* Strong curves: UI that answers at once and settles gently. */
+  --motion-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --motion-ease-icon: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Buttons --------------------------------------------------------------------------------------------------------- */
+
+.m-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--motion-radius);
+  background: var(--motion-surface);
+  color: var(--motion-ink);
+  box-shadow: inset 0 0 0 1px var(--motion-line), 0 1px 0 rgb(0 0 0 / 0.04);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--motion-fast) var(--motion-ease-out),
+    background-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    color var(--motion-fast) ease;
+}
+.m-btn:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--motion-ink) 30%, transparent), 0 6px 14px -8px rgb(0 0 0 / 0.3); }
+/* A press answers at once; the release eases back. */
+.m-btn:active,
+.m-press:active { transform: scale(0.97); }
+.m-press { transition: transform var(--motion-fast) var(--motion-ease-out); }
+.m-btn:focus-visible { outline: 2px solid var(--motion-focus); outline-offset: 2px; }
+.m-btn-primary { background: var(--motion-accent); color: var(--motion-on-accent); box-shadow: 0 1px 0 rgb(0 0 0 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.12); }
+.m-btn-primary:hover { background: color-mix(in srgb, var(--motion-accent) 86%, var(--motion-on-accent)); box-shadow: 0 8px 18px -10px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.12); }
+.m-btn-square { width: 40px; padding: 0; }
+.m-btn .m-icon { width: 18px; height: 18px; }
+.m-btn[aria-disabled="true"] { cursor: default; }
+.m-btn[aria-disabled="true"]:active { transform: none; }
+
+/* Async: the label and the status share one grid cell, so the button keeps its width through every state. */
+.m-async { display: inline-grid; }
+.m-async > .m-label,
+.m-async > .m-status {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 200ms var(--motion-ease-icon), transform 200ms var(--motion-ease-icon), filter 200ms var(--motion-ease-icon);
+}
+.m-async > .m-status { opacity: 0; transform: scale(0.9); filter: blur(4px); }
+.m-async:not([data-state="idle"]) > .m-label { opacity: 0; transform: scale(0.96); filter: blur(4px); }
+.m-async:not([data-state="idle"]) > .m-status { opacity: 1; transform: none; filter: none; }
+.m-status-glyphs { display: inline-grid; width: 18px; height: 18px; }
+.m-status-glyphs > svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.25);
+  filter: blur(4px);
+  transition: opacity 200ms var(--motion-ease-icon), transform 200ms var(--motion-ease-icon), filter 200ms var(--motion-ease-icon);
+}
+.m-async[data-state="loading"] .m-spin,
+.m-async[data-state="success"] .m-done,
+.m-async[data-state="error"] .m-cross { opacity: 1; transform: none; filter: none; }
+.m-async[data-state="loading"] .m-spin { animation: m-turn 700ms linear infinite; }
+.m-spin circle { stroke-dasharray: 62 38; }
+.m-async[data-state="success"] .m-done { color: var(--motion-success); }
+.m-async[data-state="success"] .m-done .m-draw { stroke-dashoffset: 0; }
+.m-done path { stroke-width: var(--motion-stroke); }
+.m-async[data-state="error"] { animation: m-shake 380ms var(--motion-ease-out); }
+.m-async[data-state="error"] .m-cross { color: var(--motion-danger); }
+.m-cross path { stroke-width: var(--motion-stroke); }
+
+/* Hold: a fill with the label in inverse colours sweeps across while the button is held, and runs back if it is
+   let go. Linear while filling, because it measures time; eased on the way back, because that is feedback. */
+.m-hold { overflow: hidden; isolation: isolate; }
+.m-hold-fill {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: inherit;
+  background: var(--motion-danger);
+  color: #fff;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  transition: clip-path 220ms var(--motion-ease-out);
+}
+.m-hold[data-holding] .m-hold-fill { clip-path: inset(0); transition: clip-path var(--m-hold, 1200ms) linear; }
+.m-hold[data-state="done"] .m-hold-fill { clip-path: inset(0); transition: none; }
+
+/* Icons --------------------------------------------------------------------------------------------------------- */
+
+.m-icon { width: 20px; height: 20px; flex: none; overflow: visible; }
+.m-icon [stroke] { stroke-width: var(--motion-stroke); }
+.m-draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 420ms var(--motion-ease-out) 60ms; }
+
+/* Copy turns into a tick: scale, opacity and blur together, so the swap reads as one glyph changing. */
+.m-icon-copy { display: inline-grid; width: 18px; height: 18px; }
+.m-icon-copy > svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  transition: opacity 200ms var(--motion-ease-icon), transform 200ms var(--motion-ease-icon), filter 200ms var(--motion-ease-icon);
+}
+.m-icon-copy [stroke] { stroke-width: var(--motion-stroke); }
+.m-copy-tick { opacity: 0; transform: scale(0.25); filter: blur(4px); }
+:is([data-copied], [data-on]) > .m-icon-copy .m-copy-glyph,
+.m-icon-copy[data-on] .m-copy-glyph { opacity: 0; transform: scale(0.25); filter: blur(4px); }
+:is([data-copied], [data-on]) > .m-icon-copy .m-copy-tick,
+.m-icon-copy[data-on] .m-copy-tick { opacity: 1; transform: none; filter: none; }
+
+/* Menu: the outer bars swing to the middle and cross; the middle one shrinks away. */
+.m-icon-menu .m-bar { transform-box: fill-box; transform-origin: center; transition: transform 320ms var(--motion-ease-in-out), opacity 200ms ease; }
+.m-icon-menu:is([data-on], :is([aria-pressed="true"], [aria-expanded="true"]) > *) .m-bar-1 { transform: translateY(5px) rotate(45deg); }
+.m-icon-menu:is([data-on], :is([aria-pressed="true"], [aria-expanded="true"]) > *) .m-bar-2 { transform: scaleX(0); opacity: 0; }
+.m-icon-menu:is([data-on], :is([aria-pressed="true"], [aria-expanded="true"]) > *) .m-bar-3 { transform: translateY(-5px) rotate(-45deg); }
+
+/* Play and pause: each half reshapes between a bar and half a triangle. The triangle sits a little right of
+   centre, where it looks centred. */
+.m-icon-play { position: relative; display: inline-block; }
+.m-icon-play > i { position: absolute; inset: 0; background: currentColor; transition: clip-path 280ms var(--motion-ease-in-out); }
+.m-icon-play > i:first-child { clip-path: polygon(20% 8%, 50% 27%, 50% 73%, 20% 92%); }
+.m-icon-play > i:last-child { clip-path: polygon(50% 27%, 88% 50%, 88% 50%, 50% 73%); }
+.m-icon-play:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) > i:first-child { clip-path: polygon(21% 12%, 41% 12%, 41% 88%, 21% 88%); }
+.m-icon-play:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) > i:last-child { clip-path: polygon(59% 12%, 79% 12%, 79% 88%, 59% 88%); }
+
+/* Heart: fills, squeezes and pops, and throws a ring of sparks. */
+.m-icon-heart .m-heart { fill: transparent; transform-box: fill-box; transform-origin: center; transition: fill 160ms ease, stroke 160ms ease; }
+.m-icon-heart .m-sparks circle { fill: var(--motion-heart); opacity: 0; transform-box: view-box; transform-origin: 12px 12px; }
+.m-icon-heart:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-heart { fill: var(--motion-heart); stroke: var(--motion-heart); animation: m-pop 460ms var(--motion-ease-out); }
+.m-icon-heart:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-sparks circle { animation: m-spark 600ms var(--motion-ease-out) 70ms; }
+.m-icon-heart.m-bursting .m-heart { animation: m-pop-again 460ms var(--motion-ease-out); }
+.m-icon-heart.m-bursting .m-sparks circle { animation: m-spark-again 600ms var(--motion-ease-out) 70ms; }
+
+/* Bell: swings from its top and settles in smaller swings; the clapper lags the other way. */
+.m-icon-bell .m-bell { transform-box: view-box; transform-origin: 12px 4px; }
+.m-icon-bell .m-bell path:first-child { fill: transparent; transition: fill 200ms ease; }
+.m-icon-bell .m-clapper { transform-box: view-box; transform-origin: 12px 6px; }
+.m-icon-bell:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-bell path:first-child { fill: currentColor; }
+.m-icon-bell:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-bell { animation: m-ring 900ms var(--motion-ease-out); }
+.m-icon-bell:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-clapper { animation: m-clap 900ms var(--motion-ease-out) 40ms; }
+.m-icon-bell.m-ringing .m-bell { animation: m-ring-again 900ms var(--motion-ease-out); }
+.m-icon-bell.m-ringing .m-clapper { animation: m-clap-again 900ms var(--motion-ease-out) 40ms; }
+
+/* Sun to moon: the rays turn and fold in while the disc grows and a mask bites a crescent out of it. */
+.m-icon-theme .m-disc { transform-box: fill-box; transform-origin: center; transition: transform 520ms var(--motion-ease-in-out); }
+.m-icon-theme .m-bite { transform-box: view-box; transition: transform 520ms var(--motion-ease-in-out); }
+.m-icon-theme .m-rays { transform-box: view-box; transform-origin: 12px 12px; transition: transform 520ms var(--motion-ease-in-out), opacity 320ms ease; }
+.m-icon-theme:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-disc { transform: scale(1.55); }
+.m-icon-theme:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-bite { transform: translate(-4px, 4px); }
+.m-icon-theme:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-rays { transform: rotate(-90deg) scale(0.4); opacity: 0; }
+
+/* Download: the arrow bobs while it works, then drops into the tray and a tick draws in its place. */
+.m-icon-download .m-arrow-down { transform-box: view-box; transition: transform 320ms var(--motion-ease-out), opacity 220ms ease; }
+.m-icon-download[data-state="loading"] .m-arrow-down { animation: m-bob 900ms var(--motion-ease-in-out) infinite; }
+.m-icon-download:is([data-on], [data-state="done"]) .m-arrow-down { transform: translateY(7px); opacity: 0; }
+.m-icon-download:is([data-on], [data-state="done"]) .m-tick { stroke-dashoffset: 0; }
+
+/* Check and eye: a stroke that draws itself in. The check's ring fills in behind its tick. */
+.m-icon-check .m-ring { fill: transparent; transition: fill 220ms ease, stroke 220ms ease; }
+.m-icon-check:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-ring { fill: var(--motion-success); stroke: var(--motion-success); }
+.m-icon-check:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-draw { stroke: #fff; }
+.m-icon-check:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-draw,
+.m-icon-eye:is([data-on], :is([aria-pressed="true"], [aria-checked="true"]) > *) .m-draw { stroke-dashoffset: 0; }
+
+/* Arrow: nudges forward while its link or button is hovered. Chevron: turns over when expanded. */
+.m-icon-arrow .m-nudge { transition: transform 220ms var(--motion-ease-out); }
+:is(a, button):hover > .m-icon-arrow .m-nudge { transform: translateX(3px); }
+.m-icon-chevron .m-turn { transform-box: view-box; transform-origin: 12px 12px; transition: transform 320ms var(--motion-ease-out); }
+.m-icon-chevron:is([data-on], [aria-expanded="true"] > *) .m-turn { transform: rotate(180deg); }
+
+/* Switch -------------------------------------------------------------------------------------------------------- */
+
+.m-switch {
+  --w: 44px;
+  --h: 26px;
+  --pad: 3px;
+  --thumb: calc(var(--h) - 2 * var(--pad));
+  --travel: calc(var(--w) - var(--thumb) - 2 * var(--pad));
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  width: var(--w);
+  height: var(--h);
+  padding: var(--pad);
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--motion-ink) 18%, transparent);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 220ms ease;
+}
+.m-switch[aria-checked="true"] { background: var(--motion-success); }
+.m-switch:focus-visible { outline: 2px solid var(--motion-focus); outline-offset: 2px; }
+.m-switch-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 3px 8px -2px rgb(0 0 0 / 0.25);
+  transition: transform 260ms var(--motion-ease-out), width 160ms var(--motion-ease-out);
+}
+.m-switch[aria-checked="true"] .m-switch-thumb { transform: translateX(var(--travel)); }
+/* Pressed, the thumb stretches toward where it is going, like a fingertip squashing it. */
+.m-switch:active .m-switch-thumb { width: calc(var(--thumb) + 5px); }
+.m-switch[aria-checked="true"]:active .m-switch-thumb { transform: translateX(calc(var(--travel) - 5px)); }
+
+/* Tabs ---------------------------------------------------------------------------------------------------------- */
+
+.m-tabs { position: relative; display: inline-flex; gap: 2px; padding: 4px; }
+.m-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--motion-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--motion-fast) ease;
+}
+.m-tab:hover,
+.m-tab[aria-selected="true"] { color: var(--motion-ink); }
+.m-tab:focus-visible { outline: 2px solid var(--motion-focus); outline-offset: 2px; }
+.m-tabs-underline { gap: 20px; padding: 0 0 2px; }
+.m-tabs-underline .m-tab { padding: 8px 0; border-radius: 6px; }
+.m-tabs-bar { position: absolute; left: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--motion-ink); pointer-events: none; }
+.m-slider { position: relative; }
+.m-tabs-ready .m-tabs-bar { transition: transform 340ms var(--motion-ease-out), width 340ms var(--motion-ease-out); }
+.m-tabs-pill { border-radius: 999px; background: color-mix(in srgb, var(--motion-ink) 6%, transparent); }
+/* The filled copy of the labels, clipped to the active tab: the text colour turns exactly where the pill is. */
+.m-tabs-fill { position: absolute; inset: 0; display: flex; gap: inherit; padding: inherit; border-radius: inherit; background: var(--motion-ink); pointer-events: none; }
+.m-tabs-fill .m-tab { color: var(--motion-on-accent); }
+.m-tabs-ready > .m-tabs-fill { transition: clip-path 360ms var(--motion-ease-out); }
+
+/* Tooltip ------------------------------------------------------------------------------------------------------- */
+
+.m-tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: min(240px, calc(100vw - 16px));
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: var(--motion-ink);
+  color: var(--motion-surface);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(var(--m-tip-shift, 3px)) scale(0.97);
+  transition: opacity 125ms ease-out, transform 125ms var(--motion-ease-out);
+}
+.m-tooltip[data-side="bottom"] { --m-tip-shift: -3px; }
+.m-tooltip[data-open] { opacity: 1; transform: none; }
+.m-tooltip[data-instant] { transition-duration: 0ms; }
+
+/* Toast --------------------------------------------------------------------------------------------------------- */
+
+.m-toaster {
+  position: fixed;
+  z-index: 1000;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(380px, calc(100vw - 32px));
+  translate: -50% 0;
+  pointer-events: none;
+}
+.m-toaster[data-position="bottom-right"] { left: auto; right: 16px; translate: none; }
+.m-toaster ol { position: relative; margin: 0; padding: 0; list-style: none; pointer-events: auto; transition: height 400ms var(--motion-ease-out); }
+.m-toast {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 10px 10px 14px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--motion-surface);
+  color: var(--motion-ink);
+  box-shadow: 0 0 0 1px var(--motion-line), 0 14px 34px -14px rgb(0 0 0 / 0.4);
+  font-size: 14px;
+  touch-action: none;
+  transform-origin: 50% 0;
+  transition: transform 400ms var(--motion-ease-out), opacity 400ms ease, height 400ms var(--motion-ease-out);
+}
+.m-toast[data-entering] { transform: translateY(110%); opacity: 0; }
+.m-toast[data-dragging] { transition: none; cursor: grabbing; }
+.m-toast[data-removed] { transition: transform 220ms ease-out, opacity 200ms ease; }
+.m-toast > * { transition: opacity 200ms ease; }
+.m-toaster:not([data-expanded]) .m-toast:not(:first-child) > * { opacity: 0; }
+.m-toast-glyph { flex: none; width: 20px; height: 20px; padding: 2px; border-radius: 999px; background: var(--motion-muted); color: #fff; }
+.m-toast[data-type="success"] .m-toast-glyph { background: var(--motion-success); }
+.m-toast[data-type="error"] .m-toast-glyph { background: var(--motion-danger); }
+.m-toast-text { flex: 1; min-width: 0; margin: 0; line-height: 1.4; }
+.m-toast-action,
+.m-toast-close { flex: none; border: 0; font: inherit; cursor: pointer; transition: background-color var(--motion-fast) ease, transform var(--motion-fast) var(--motion-ease-out); }
+.m-toast-action { height: 30px; padding: 0 10px; border-radius: 8px; background: var(--motion-ink); color: var(--motion-surface); font-size: 13px; font-weight: 500; }
+.m-toast-close { position: relative; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: transparent; color: var(--motion-muted); }
+.m-toast-close::after { content: ""; position: absolute; inset: -6px; }
+.m-toast-close:hover { background: color-mix(in srgb, var(--motion-ink) 7%, transparent); color: var(--motion-ink); }
+.m-toast-action:active,
+.m-toast-close:active { transform: scale(0.96); }
+.m-toast-x { width: 16px; height: 16px; }
+
+/* Accordion ----------------------------------------------------------------------------------------------------- */
+
+.m-accordion-item { border-bottom: 1px solid var(--motion-line); }
+.m-accordion-item > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.m-accordion-item > button:focus-visible { outline: 2px solid var(--motion-focus); outline-offset: 2px; border-radius: 6px; }
+/* The row grows from nothing to the content's own height: no height is measured in script. */
+.m-accordion-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 380ms var(--motion-ease-out); }
+.m-accordion-panel[data-open] { grid-template-rows: 1fr; }
+.m-accordion-content {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 200ms ease, transform 380ms var(--motion-ease-out), padding-bottom 380ms var(--motion-ease-out);
+}
+.m-accordion-panel[data-open] > .m-accordion-content { padding-bottom: 14px; opacity: 1; transform: none; transition-delay: 60ms, 60ms, 0ms; }
+
+/* Menu ---------------------------------------------------------------------------------------------------------- */
+
+.m-menu { position: relative; display: inline-block; }
+.m-menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  display: grid;
+  gap: 2px;
+  min-width: 190px;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  border-radius: 12px;
+  background: var(--motion-surface);
+  box-shadow: 0 0 0 1px var(--motion-line), 0 18px 40px -16px rgb(0 0 0 / 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.96);
+  transform-origin: top left;
+  transition: opacity 150ms var(--motion-ease-out), transform 150ms var(--motion-ease-out), visibility 0s linear 150ms;
+}
+.m-menu-list[data-align="end"] { right: 0; left: auto; transform-origin: top right; }
+.m-menu-list[data-open] { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.m-menu-list :is(a, button) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.m-menu-list :is(a, button):is(:hover, :focus-visible) { outline: none; background: color-mix(in srgb, var(--motion-ink) 7%, transparent); }
+
+/* Counter, spinner, skeleton, progress -------------------------------------------------------------------------- */
+
+.m-counter { display: inline-flex; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-counter-track { display: inline-flex; }
+.m-slot {
+  display: inline-block;
+  max-width: 1em;
+  height: 1.2em;
+  overflow: hidden;
+  transition: max-width 380ms var(--motion-ease-out), opacity 300ms ease, filter 300ms ease;
+}
+/* The roll fades out at the top and bottom edges, so digits slide in from under a lip instead of a cut. */
+.m-digit { mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+.m-strip { display: block; transition: transform 620ms var(--motion-ease-out); }
+.m-strip > span { display: block; height: 1.2em; text-align: center; }
+.m-strip[data-snap] { transition: none; }
+.m-slot[data-entering] { max-width: 0; opacity: 0; filter: blur(4px); }
+.m-slot[data-leaving] { opacity: 0; filter: blur(4px); }
+
+.m-spinner { position: relative; display: inline-block; flex: none; width: 20px; height: 20px; }
+.m-spinner > i {
+  position: absolute;
+  top: 0;
+  left: 45.5%;
+  width: 9%;
+  height: 28%;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 50% 178.5%;
+  animation: m-fade 800ms linear infinite;
+}
+.m-spinner > i:nth-child(1) { rotate: 0deg; animation-delay: -700ms; }
+.m-spinner > i:nth-child(2) { rotate: 45deg; animation-delay: -600ms; }
+.m-spinner > i:nth-child(3) { rotate: 90deg; animation-delay: -500ms; }
+.m-spinner > i:nth-child(4) { rotate: 135deg; animation-delay: -400ms; }
+.m-spinner > i:nth-child(5) { rotate: 180deg; animation-delay: -300ms; }
+.m-spinner > i:nth-child(6) { rotate: 225deg; animation-delay: -200ms; }
+.m-spinner > i:nth-child(7) { rotate: 270deg; animation-delay: -100ms; }
+.m-spinner > i:nth-child(8) { rotate: 315deg; animation-delay: 0ms; }
+
+.m-skeleton { position: relative; display: block; overflow: hidden; border-radius: 8px; background: color-mix(in srgb, var(--motion-ink) 7%, transparent); }
+.m-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  transform: translateX(-100%);
+  animation: m-shimmer 1.6s var(--motion-ease-in-out) infinite;
+}
+.m-skeleton-line { height: 0.8em; border-radius: 4px; }
+
+.m-progress { position: relative; display: block; height: 6px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--motion-ink) 9%, transparent); }
+.m-progress-bar {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--motion-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 520ms var(--motion-ease-out);
+}
+.m-progress[data-indeterminate] .m-progress-bar { right: auto; width: 40%; transform: none; transition: none; animation: m-sweep 1.3s var(--motion-ease-in-out) infinite; }
+
+/* Keyframes ----------------------------------------------------------------------------------------------------- */
+
+@keyframes m-turn { to { transform: rotate(360deg); } }
+@keyframes m-fade { from { opacity: 1; } to { opacity: 0.15; } }
+@keyframes m-shake { 0%, 100% { translate: 0; } 20% { translate: -4px 0; } 40% { translate: 4px 0; } 60% { translate: -3px 0; } 80% { translate: 2px 0; } }
+@keyframes m-pop { 0% { transform: scale(1); } 30% { transform: scale(0.78); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes m-pop-again { 0% { transform: scale(1); } 30% { transform: scale(0.78); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes m-spark { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-7px) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-13px) scale(0); } }
+@keyframes m-spark-again { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-7px) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-13px) scale(0); } }
+@keyframes m-ring { 0%, 100% { transform: rotate(0); } 10% { transform: rotate(16deg); } 25% { transform: rotate(-14deg); } 40% { transform: rotate(10deg); } 55% { transform: rotate(-7deg); } 70% { transform: rotate(4deg); } 85% { transform: rotate(-2deg); } }
+@keyframes m-ring-again { 0%, 100% { transform: rotate(0); } 10% { transform: rotate(16deg); } 25% { transform: rotate(-14deg); } 40% { transform: rotate(10deg); } 55% { transform: rotate(-7deg); } 70% { transform: rotate(4deg); } 85% { transform: rotate(-2deg); } }
+@keyframes m-clap { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-1.6px); } 32% { transform: translateX(1.5px); } 48% { transform: translateX(-1px); } 64% { transform: translateX(0.7px); } 80% { transform: translateX(-0.3px); } }
+@keyframes m-clap-again { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-1.6px); } 32% { transform: translateX(1.5px); } 48% { transform: translateX(-1px); } 64% { transform: translateX(0.7px); } 80% { transform: translateX(-0.3px); } }
+@keyframes m-bob { 50% { transform: translateY(2.5px); } }
+@keyframes m-shimmer { to { transform: translateX(100%); } }
+@keyframes m-sweep { from { translate: -100% 0; } to { translate: 250% 0; } }
+
+/* Reduced motion: no movement, no blur; states still change, just at once. The spinner keeps turning at half
+   speed, because without it nothing says the page is working. */
+@media (prefers-reduced-motion: reduce) {
+  .m-btn,
+  .m-press,
+  .m-async > *,
+  .m-status-glyphs > svg,
+  .m-hold-fill,
+  .m-icon *,
+  .m-icon-play > i,
+  .m-icon-copy > svg,
+  .m-switch,
+  .m-switch-thumb,
+  .m-tabs-bar,
+  .m-tabs-fill,
+  .m-tooltip,
+  .m-toast,
+  .m-toaster ol,
+  .m-accordion-panel,
+  .m-accordion-content,
+  .m-menu-list,
+  .m-slot,
+  .m-strip,
+  .m-progress-bar { transition-duration: 0ms !important; animation: none !important; }
+  .m-btn:active,
+  .m-press:active { transform: none; }
+  .m-switch:active .m-switch-thumb { width: var(--thumb); }
+  .m-switch[aria-checked="true"]:active .m-switch-thumb { transform: translateX(var(--travel)); }
+  .m-skeleton::after { animation: none; }
+  .m-spinner > i { animation-duration: 1600ms; }
+  .m-async[data-state="loading"] .m-spin { animation: m-turn 1400ms linear infinite !important; }
+}

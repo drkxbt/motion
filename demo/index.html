@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>motion</title>
+  <meta name="description" content="Small animated details for websites in plain CSS and TypeScript: buttons, icons, components and loading states.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../motion.css">
+  <link rel="stylesheet" href="demo.css">
+  <script type="module" src="demo.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <div>
+        <p class="path">github.com/drkxbt/motion</p>
+        <h1>motion</h1>
+        <p class="lede">Small animated details for websites: buttons, icons, components and loading states. Plain CSS and TypeScript, no dependencies. Everything on this page is live.</p>
+      </div>
+      <button class="m-btn m-btn-square theme" type="button" aria-pressed="false" aria-label="Dark theme" data-theme-toggle></button>
+    </header>
+
+    <section class="group" aria-labelledby="buttons-title">
+      <h2 id="buttons-title">Buttons</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn m-btn-primary" type="button">Save changes</button>
+            <button class="m-btn" type="button">Cancel</button>
+          </div>
+          <h3>Press</h3>
+          <p>Every <code>.m-btn</code> gives a little under your finger, so a press always feels heard.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn m-btn-primary" type="button" data-async="ok">Save changes</button>
+            <button class="m-btn" type="button" data-async="fail">Publish</button>
+          </div>
+          <h3>Async</h3>
+          <p>A spinner while it works, then a tick or a cross. The width never moves.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <div class="snippet"><code>npm i github:drkxbt/motion</code><button class="m-btn m-btn-square" type="button" aria-label="Copy the install command" data-copy="npm install github:drkxbt/motion"></button></div>
+          </div>
+          <h3>Copy</h3>
+          <p>The glyph turns into a tick and the result is read aloud.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn hold" type="button" data-hold><span>Hold to delete</span></button>
+          </div>
+          <h3>Hold to confirm</h3>
+          <p>For actions that should never happen by accident. Let go early and it runs back.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <a class="m-btn m-btn-primary" href="#icons-title" data-magnetic>Get started<span data-icon="arrow"></span></a>
+          </div>
+          <h3>Magnetic</h3>
+          <p>Leans toward a mouse as it comes near and springs back. Off for touch and reduced motion.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn like" type="button" aria-pressed="false" aria-label="Like" data-like><span data-icon="heart"></span><span data-like-count></span></button>
+          </div>
+          <h3>Like</h3>
+          <p>The heart pops and throws sparks while the count rolls up: two pieces of the kit working together.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="icons-title">
+      <h2 id="icons-title">Icons</h2>
+      <p class="group-sub">Each one has two states. Toggle the button's aria-pressed or aria-expanded and the icon moves on its own.</p>
+      <div class="icons">
+        <button class="icon-toggle" type="button" aria-expanded="false" data-toggle="expanded"><span data-icon="menu"></span><span>Menu</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="play"></span><span>Play</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="heart"></span><span>Like</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="bell"></span><span>Notify</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="theme"></span><span>Theme</span></button>
+        <button class="icon-toggle" type="button" data-download><span data-icon="download"></span><span>Download</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="check"></span><span>Done</span></button>
+        <button class="icon-toggle" type="button" aria-pressed="false" data-toggle><span data-icon="eye"></span><span>Hide</span></button>
+        <button class="icon-toggle" type="button" aria-expanded="false" data-toggle="expanded"><span data-icon="chevron"></span><span>More</span></button>
+        <a class="icon-toggle" href="#components-title"><span data-icon="arrow"></span><span>Next</span></a>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="components-title">
+      <h2 id="components-title">Components</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="stage stage-col">
+            <label class="setting"><span>Notifications</span><button type="button" aria-checked="true" aria-label="Notifications" data-switch></button></label>
+            <label class="setting"><span>Weekly digest</span><button type="button" aria-label="Weekly digest" data-switch></button></label>
+          </div>
+          <h3>Switch</h3>
+          <p>The thumb slides across and stretches a little while pressed.</p>
+        </article>
+        <article class="card">
+          <div class="stage stage-col">
+            <div data-tabs="pill"><button type="button">Day</button><button type="button" aria-selected="true">Week</button><button type="button">Month</button><button type="button">Year</button></div>
+            <div data-tabs="underline"><button type="button" aria-selected="true">Overview</button><button type="button">Activity</button><button type="button">Settings</button></div>
+          </div>
+          <h3>Tabs</h3>
+          <p>A pill or a bar that glides between tabs. The pill recolours the label it passes over.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn m-btn-square" type="button" aria-label="Copy link" data-tooltip="Copy link"><span data-icon="copy"></span></button>
+            <button class="m-btn m-btn-square" type="button" aria-label="Like" data-tooltip="Like"><span data-icon="heart"></span></button>
+            <button class="m-btn m-btn-square" type="button" aria-label="Notifications" data-tooltip="Notifications"><span data-icon="bell"></span></button>
+            <button class="m-btn m-btn-square" type="button" aria-label="Download" data-tooltip="Download"><span data-icon="download"></span></button>
+          </div>
+          <h3>Tooltip</h3>
+          <p>The first one waits a moment; the next ones show at once as you move along.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <button class="m-btn" type="button" data-toast="success">Save</button>
+            <button class="m-btn" type="button" data-toast="undo">Archive</button>
+            <button class="m-btn" type="button" data-toast="error">Fail</button>
+          </div>
+          <h3>Toast</h3>
+          <p>They stack, open on hover, pause their clock while you read, and swipe away.</p>
+        </article>
+        <article class="card">
+          <div class="stage stage-col">
+            <div class="faq" data-accordion>
+              <div class="m-accordion-item"><button type="button">Does it need a framework?<span data-icon="chevron"></span></button><div><p>No. It is CSS and a few small functions, so it works in plain HTML, React, Vue or anything else.</p></div></div>
+              <div class="m-accordion-item"><button type="button">What about reduced motion?<span data-icon="chevron"></span></button><div><p>Movement stops and states change at once. Spinners keep turning, slower.</p></div></div>
+            </div>
+          </div>
+          <h3>Accordion</h3>
+          <p>The panel grows to its own height while the text rises in. No heights in script.</p>
+        </article>
+        <article class="card">
+          <div class="stage">
+            <div class="m-menu">
+              <button class="m-btn" type="button" data-menu>Options<span data-icon="chevron"></span></button>
+              <div>
+                <button type="button">Edit</button>
+                <button type="button">Duplicate</button>
+                <button type="button">Archive</button>
+              </div>
+            </div>
+          </div>
+          <h3>Menu</h3>
+          <p>Grows out of its button's corner, fast. Arrow keys, Home, End and Escape all work.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="loading-title">
+      <h2 id="loading-title">Numbers and loading</h2>
+      <div class="grid grid-4">
+        <article class="card">
+          <div class="stage stage-col">
+            <span class="big-number" data-counter></span>
+            <div class="row">
+              <button class="m-btn m-btn-square" type="button" aria-label="Subtract 7" data-step="-7">−</button>
+              <button class="m-btn m-btn-square" type="button" aria-label="Add 13" data-step="13">+</button>
+              <button class="m-btn" type="button" data-step="random">Random</button>
+            </div>
+          </div>
+          <h3>Counter</h3>
+          <p>Digits roll like an odometer: up when it grows, down when it shrinks.</p>
+        </article>
+        <article class="card">
+          <div class="stage" data-spinners></div>
+          <h3>Spinner</h3>
+          <p>Eight bars, quick on purpose. A faster spinner makes the same wait feel shorter.</p>
+        </article>
+        <article class="card">
+          <div class="stage stage-col">
+            <div class="profile" data-skeleton>
+              <span class="m-skeleton avatar-sk"></span>
+              <span class="lines"><span class="m-skeleton m-skeleton-line" style="width: 70%"></span><span class="m-skeleton m-skeleton-line" style="width: 45%"></span></span>
+            </div>
+            <button class="m-btn" type="button" data-reload>Reload</button>
+          </div>
+          <h3>Skeleton</h3>
+          <p>A placeholder in the shape of what is coming, with a soft sheen moving across.</p>
+        </article>
+        <article class="card">
+          <div class="stage stage-col">
+            <span class="progress" data-progress></span>
+            <div class="row">
+              <button class="m-btn" type="button" data-run>Upload</button>
+              <button class="m-btn" type="button" data-unknown>Unknown length</button>
+            </div>
+          </div>
+          <h3>Progress</h3>
+          <p>Eases to each new value instead of jumping, or sweeps when the length is unknown.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <p>MIT licensed. Built by drk.</p>
+      <p>Respects reduced motion.</p>
+    </footer>
+  </main>
+</body>
+</html>

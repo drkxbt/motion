@@ -1,0 +1,8 @@
+motion
+Copyright 2026 drk
+
+Licensed under the MIT License. See LICENSE.
+
+The demo page ships the Geist and Geist Mono typefaces by Vercel, in collaboration
+with basement.studio, in demo/fonts/. They are licensed under the SIL Open Font
+License 1.1. See demo/fonts/OFL.txt. The library itself bundles no fonts.
