@@ -2,6 +2,8 @@
 
 Small animated details for websites: buttons that answer a press, icons that change state, components that open and slide, and numbers that roll. Plain CSS and TypeScript with no dependencies, so it works in plain HTML, React, Vue, Svelte or anything else.
 
+See [every piece moving on drk.vc](https://drk.vc/repo?id=motion#preview).
+
 ![A tour of the kit: an async button saving, a like that pops while its count rolls, icons changing state, tabs gliding, a counter rolling and a toast arriving](demo/overview.webp)
 
 | Folder | What is in it |
